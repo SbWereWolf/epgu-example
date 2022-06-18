@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--suppress XmlUnusedNamespaceDeclaration -->
+<xs:schema
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:epgu="urn://rpn.gov.ru/services/smev/epgu-integration/1.5.0"
+    xmlns:com="urn://rpn.gov.ru/services/smev/common/1.5.0"
+    xmlns:sup=
+        "urn://x-artefacts-smev-gov-ru/supplementary/commons/1.0.1"
+    xmlns="urn://rpn.gov.ru/services/smev/epgu-basis/1.0.1"
+    targetNamespace="urn://rpn.gov.ru/services/smev/epgu-basis/1.0.1"
+    elementFormDefault="qualified"
+    version="1.0.1"
+>
+    <xs:import
+        namespace=
+            "urn://rpn.gov.ru/services/smev/epgu-integration/1.5.0"
+        schemaLocation="common/epgu-integration.xsd"
+    />
+    <xs:import
+        namespace=
+            "urn://rpn.gov.ru/services/smev/common/1.5.0"
+        schemaLocation="common/rprn-common.xsd"
+    />
+    <xs:import
+        namespace=
+            "urn://x-artefacts-smev-gov-ru/supplementary/commons/1.0.1"
+        schemaLocation="common/supplementary-commons-1.0.1.xsd"
+    />
+    <xs:element name="FormData" type="FormDataType"/>
+    <xs:element name="ProcessingResult" type="ProcessingResultType"/>
+    <!--FormData-->
+    <xs:complexType name="FormDataType">
+        <xs:annotation>
+            <xs:documentation>Передача заявления</xs:documentation>
+            <xs:documentation>или запроса на отмену</xs:documentation>
+            <xs:documentation>заявления или</xs:documentation>
+            <xs:documentation>текстового сообщения</xs:documentation>
+            <xs:documentation>от заявителя в ведомство</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="epgu:FormDataType">
+                <xs:sequence minOccurs="0">
+                    <xs:choice>
+                        <xs:element
+                            name="Petition"
+                            type="PetitionType"
+                        />
+                        <xs:element name="Search" type="SearchType"/>
+                    </xs:choice>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <!--ProcessingResult-->
+    <xs:complexType name="ProcessingResultType">
+        <xs:annotation>
+            <xs:documentation>Ответ на подачу заявления</xs:documentation>
+            <xs:documentation>или запроса на отмену</xs:documentation>
+            <xs:documentation>заявления или текстового</xs:documentation>
+            <xs:documentation>сообщения от заявителя</xs:documentation>
+            <xs:documentation>в ведомство</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="epgu:FormDataResponseType">
+                <xs:sequence minOccurs="0">
+                    <xs:choice>
+                        <xs:element
+                            name="Information"
+                            type="InformationType"
+                        />
+                        <xs:element name="Found" type="FoundType"/>
+                    </xs:choice>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <!--FormDataType-->
+    <xs:complexType name="PetitionType">
+        <xs:annotation>
+            <xs:documentation>Заявление</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Applicant" type="AddresserType">
+                <xs:annotation>
+                    <xs:documentation>Отправитель заявления</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Recipient" type="AddresseeType">
+                <xs:annotation>
+                    <xs:documentation>Получатель заявления</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Communication" type="CommunicationType">
+                <xs:annotation>
+                    <xs:documentation>Контакты</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Content" type="MatterType">
+                <xs:annotation>
+                    <xs:documentation>Сведения заявления</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <!--PetitionType-->
+    <xs:complexType name="AddresserType">
+        <xs:annotation>
+            <xs:documentation>Адресант, отправитель</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:choice>
+                <xs:element
+                    name="NaturalPerson" type="NaturalPersonType">
+                    <xs:annotation>
+                        <xs:documentation>Физическое лицо</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element
+                    name="SoleProprietor" type="SoleProprietorType">
+                    <xs:annotation>
+                        <xs:documentation>Индивидуальный</xs:documentation>
+                        <xs:documentation>предприниматель</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="LegalEntity" type="LegalEntityType">
+                    <xs:annotation>
+                        <xs:documentation>Юридическое</xs:documentation>
+                        <xs:documentation>лицо</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="Foreigner" type="ForeignerType">
+                    <xs:annotation>
+                        <xs:documentation>Лицо нерезидент РФ</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:choice>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="AddresseeType">
+        <xs:annotation>
+            <xs:documentation>Адресат, получатель</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Authority" type="AuthorityType">
+                <xs:annotation>
+                    <xs:documentation>Территориальный</xs:documentation>
+                    <xs:documentation>орган РПН</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute
+            name="Region"
+            type="com:SSRFType"
+            use="required"
+        >
+            <xs:annotation>
+                <xs:documentation>Регион поднадзорности</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="CommunicationType">
+        <xs:annotation>
+            <xs:documentation>Способ связи</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element
+                name="Contact" type="ContactType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Контактная информация</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute
+            name="Serving" type="ServingType" use="required">
+            <xs:annotation>
+                <xs:documentation>Способ получения</xs:documentation>
+                <xs:documentation>государственной услуги</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <!--AddresseeType-->
+    <xs:complexType name="AuthorityType">
+        <xs:annotation>
+            <xs:documentation>Территориальный орган</xs:documentation>
+            <xs:documentation>получатель запроса</xs:documentation>
+        </xs:annotation>
+        <xs:attribute
+            name="INN" type="com:LegalEntityInnType" use="required"/>
+        <xs:attribute name="KPP" type="com:KppType" use="required"/>
+    </xs:complexType>
+    <!--CommunicationType-->
+    <xs:complexType name="ContactType">
+        <xs:annotation>
+            <xs:documentation>Контактная информация</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Person" type="Functionary">
+                <xs:annotation>
+                    <xs:documentation>Контактное лицо</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="Mail" type="xs:token">
+            <xs:annotation>
+                <xs:documentation>Почтовый адрес</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="Email" type="xs:token">
+            <xs:annotation>
+                <xs:documentation>Адрес электронной почты</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="Phone" type="xs:token">
+            <xs:annotation>
+                <xs:documentation>Номер телефона</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:simpleType name="ServingType">
+        <xs:annotation>
+            <xs:documentation>
+                <xs:documentation>Способ получения</xs:documentation>
+                <xs:documentation>государственной услуги</xs:documentation>
+                <xs:documentation>MYSELF на бумажном носителе,</xs:documentation>
+                <xs:documentation>лично;</xs:documentation>
+                <xs:documentation>POST на бумажном носителе,</xs:documentation>
+                <xs:documentation>направить по почте;</xs:documentation>
+                <xs:documentation>E-DOC в форме электронного</xs:documentation>
+                <xs:documentation> документа, подписанного ЭП;</xs:documentation>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:token">
+            <xs:enumeration value="MYSELF"/>
+            <xs:enumeration value="POST"/>
+            <xs:enumeration value="E-DOC"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="Functionary">
+        <xs:annotation>
+            <xs:documentation>Должностное лицо</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="com:NaturalPersonName">
+                <xs:attribute name="IsHead" type="xs:boolean">
+                    <xs:annotation>
+                        <xs:documentation>Является</xs:documentation>
+                        <xs:documentation>руководителем ?</xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+                <xs:attribute name="Position" type="xs:token">
+                    <xs:annotation>
+                        <xs:documentation>Должность</xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:simpleType name="PersonType">
+        <xs:annotation>
+            <xs:documentation>Вид лица:</xs:documentation>
+            <xs:documentation>- NATURAL-PERSON</xs:documentation>
+            <xs:documentation>- физическое лицо</xs:documentation>
+            <xs:documentation>- SOLE-PROPRIETOR</xs:documentation>
+            <xs:documentation>- индивидуальный предприниматель</xs:documentation>
+            <xs:documentation>- LEGAL-ENTITY</xs:documentation>
+            <xs:documentation>- юридическое лицо</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:token">
+            <xs:enumeration value="NATURAL-PERSON"/>
+            <xs:enumeration value="SOLE-PROPRIETOR"/>
+            <xs:enumeration value="LEGAL-ENTITY"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <!-- Типы которые надо описать при разработке Вида Сведений -->
+    <xs:complexType name="SearchType">
+        <xs:annotation>
+            <xs:documentation>Параметры поиска</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="InformationType">
+        <xs:annotation>
+            <xs:documentation>Сведения документа</xs:documentation>
+            <xs:documentation>разработанного по</xs:documentation>
+            <xs:documentation>заявлению</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="FoundType">
+        <xs:annotation>
+            <xs:documentation>Найденная информация</xs:documentation>
+            <xs:documentation>(документы)</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element
+                name="Information"
+                type="InformationType"
+                minOccurs="0"
+                maxOccurs="unbounded"
+            />
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="NaturalPersonType">
+        <xs:annotation>
+            <xs:documentation>Физическое лицо</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="SoleProprietorType">
+        <xs:annotation>
+            <xs:documentation>Индивидуальный предприниматель</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="LegalEntityType">
+        <xs:annotation>
+            <xs:documentation>Юридическое лицо</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="ForeignerType">
+        <xs:annotation>
+            <xs:documentation>Лицо не резидент РФ</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="MatterType">
+        <xs:annotation>
+            <xs:documentation>Суть заявления</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>
+

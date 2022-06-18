@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns="urn://rpn.gov.ru/services/smev/common/1.5.0"
+    targetNamespace="urn://rpn.gov.ru/services/smev/common/1.5.0"
+    elementFormDefault="qualified"
+    version="1.5.0"
+>
+    <xs:complexType name="NaturalPersonName">
+        <xs:annotation>
+            <xs:documentation>Имя физического лица</xs:documentation>
+        </xs:annotation>
+        <xs:attribute name="Surname" type="xs:token" use="required">
+            <xs:annotation>
+                <xs:documentation>Фамилия</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="Name" type="xs:token" use="required">
+            <xs:annotation>
+                <xs:documentation>Имя</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="Patronymic" type="xs:token">
+            <xs:annotation>
+                <xs:documentation>Отчество</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:simpleType name="LegalEntityInnType">
+        <xs:annotation>
+            <xs:documentation>ИНН юридического лица</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:token">
+            <xs:length value="10"/>
+            <xs:pattern value="(\d[1-9]|[1-9]\d)\d{8}"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="NaturalPersonInnType">
+            <xs:annotation>
+            <xs:documentation>ИНН физического лица</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:token">
+            <xs:length value="12"/>
+            <xs:pattern value="(\d[1-9]|[1-9]\d)\d{10}"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="LegalEntityOgrnType">
+        <xs:annotation>
+            <xs:documentation>ОГРН юридического лица</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:decimal">
+            <xs:pattern value="^[125]\d{12}$"/>
+            <xs:totalDigits value="13"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="SoleProprietorOgrnType">
+        <xs:annotation>
+            <xs:documentation>ОГРН индивидуального предпринимателя
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:decimal">
+            <xs:pattern value="[3]\d{14}"/>
+            <xs:totalDigits value="15"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="KppType">
+        <xs:annotation>
+            <xs:documentation>Код причины постановки на учет (КПП)
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:token">
+            <xs:length value="9"/>
+            <xs:pattern
+                value="(\d[1-9]|[1-9]\d)(\d{2})([0-9A-F]{2})(\d{3})"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="OKTMOType">
+        <xs:annotation>
+            <xs:documentation>Код Общероссийского классификатора
+                территорий муниципальных образований
+            </xs:documentation>
+        </xs:annotation>
+        <xs:union memberTypes="xs:token">
+            <xs:simpleType>
+                <xs:restriction base="xs:token">
+                    <xs:length value="11"/>
+                    <xs:pattern value="(\d[1-9]|[1-9]\d)\d{9}"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:token">
+                    <xs:length value="8"/>
+                    <xs:pattern value="(\d[1-9]|[1-9]\d)\d{6}"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:simpleType>
+    <xs:simpleType name="OKVEDType">
+        <xs:annotation>
+            <xs:documentation>Код из Общероссийского классификатора
+                видов экономической деятельности
+            </xs:documentation>
+        </xs:annotation>
+        <xs:union memberTypes="xs:token">
+            <xs:simpleType>
+                <xs:restriction base="xs:token">
+                    <xs:length value="8"/>
+                    <xs:pattern value="\d{2}\.\d{2}\.\d{2}"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:token">
+                    <xs:length value="7"/>
+                    <xs:pattern value="\d{2}\.\d{2}\.\d{1}"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:token">
+                    <xs:length value="5"/>
+                    <xs:pattern value="\d{2}\.\d{2}"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:token">
+                    <xs:length value="4"/>
+                    <xs:pattern value="\d{2}\.\d{1}"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:simpleType>
+    <xs:simpleType name="UnitsOfMeasureOfOKEIType">
+        <xs:annotation>
+            <xs:documentation>Код из справочника</xs:documentation>
+            <xs:documentation>"Общероссийский классификатор</xs:documentation>
+            <xs:documentation>единиц измерения"</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:integer">
+            <xs:minLength value="100"/>
+            <xs:maxLength value="9999"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="SSRFType">
+        <xs:annotation>
+            <xs:documentation>Код по справочнику "Коды субъектов
+                Российской Федерации и иных территорий Российской
+                Федерации"
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:token">
+            <xs:minLength value="1"/>
+            <xs:maxLength value="2"/>
+            <xs:pattern value="([1-9]|\d[1-9]|[1-9]\d)"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="OKOPFType">
+        <xs:annotation>
+            <xs:documentation>Код из справочника</xs:documentation>
+            <xs:documentation>"Общероссийский классификатор</xs:documentation>
+            <xs:documentation>организационно-правовых форм"</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:integer">
+            <xs:minLength value="10000"/>
+            <xs:maxLength value="99999"/>
+        </xs:restriction>
+    </xs:simpleType>
+</xs:schema>

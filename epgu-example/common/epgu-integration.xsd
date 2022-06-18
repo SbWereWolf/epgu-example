@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:adp=
+        "urn://x-artefacts-smev-gov-ru/services/service-adapter/types"
+    xmlns="urn://rpn.gov.ru/services/smev/epgu-integration/1.5.0"
+    targetNamespace=
+        "urn://rpn.gov.ru/services/smev/epgu-integration/1.5.0"
+    elementFormDefault="qualified"
+    version="1.5.0"
+>
+    <xs:import
+        namespace=
+            "urn://x-artefacts-smev-gov-ru/services/service-adapter/types"
+        schemaLocation="smev-service-adapter-types.xsd"
+    />
+    <xs:simpleType name="stringNN-11">
+        <xs:restriction base="xs:normalizedString">
+            <xs:minLength value="1"/>
+            <xs:maxLength value="11"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="stringNN-20">
+        <xs:restriction base="xs:normalizedString">
+            <xs:minLength value="1"/>
+            <xs:maxLength value="20"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="string-20">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="20"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="string-50">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="50"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="string-256">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="256"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="string-2048">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="2048"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="EnvType">
+        <xs:restriction base="string-20">
+            <xs:enumeration value="DEV"/>
+            <xs:enumeration value="UAT"/>
+            <xs:enumeration value="EXUAT"/>
+            <xs:enumeration value="SVCDEV"/>
+            <xs:enumeration value="TCOD"/>
+            <xs:enumeration value="PROD"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="cancelRequestType">
+        <xs:annotation>
+            <xs:documentation>
+                Запрос на отмену заявления
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="orderId" type="xs:long"/>
+            <xs:element
+                name="reason" type="string-2048" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="textRequestType">
+        <xs:annotation>
+            <xs:documentation>
+                Текстовое сообщение от заявителя в ведомство
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="orderId" type="xs:long"/>
+            <xs:element name="text" type="string-2048"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="FormDataType">
+        <xs:annotation>
+            <xs:documentation>
+                Передача заявления или запроса на отмену заявления или
+                текстового сообщения от заявителя в ведомство
+            </xs:documentation>
+        </xs:annotation>
+        <xs:choice>
+            <xs:sequence>
+                <xs:element name="orderId" type="xs:long"/>
+                <xs:element name="Department" type="string-20"/>
+                <xs:element name="ServiceCode" type="string-20"/>
+                <xs:element name="TargetCode" type="string-20"/>
+                <xs:element name="StatementDate" type="xs:date"/>
+            </xs:sequence>
+            <xs:element
+                name="cancelRequest" type="cancelRequestType"/>
+            <xs:element
+                name="textRequest" type="textRequestType"/>
+        </xs:choice>
+        <xs:attribute name="env" type="EnvType" use="required"/>
+    </xs:complexType>
+    <xs:complexType name="orderIdType">
+        <xs:sequence>
+            <xs:annotation>
+                <xs:documentation>
+                    Номер заявки в ЛК ЕПГУ
+                </xs:documentation>
+            </xs:annotation>
+            <xs:element name="pguId" type="xs:long"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="statusCodeType">
+        <xs:annotation>
+            <xs:documentation>
+                Новый статус заявления
+            </xs:documentation>
+        </xs:annotation>
+        <xs:choice>
+            <xs:element name="orgCode" type="string-20">
+                <xs:annotation>
+                    <xs:documentation>
+                        Код ведомственного статуса
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="techCode" type="xs:byte">
+                <xs:annotation>
+                    <xs:documentation>
+                        Код статуса ЕПГУ
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="changeOrderInfoType">
+        <xs:annotation>
+            <xs:documentation>
+                Информация для изменения статуса заявления в ЛК ЕПГУ
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="orderId" type="orderIdType"/>
+            <xs:element name="statusCode" type="statusCodeType"/>
+            <xs:element
+                name="comment" type="string-2048" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:simpleType name="CancelResponseResultType">
+        <xs:annotation>
+            <xs:documentation>Результат передачи запроса на отмену
+                заявления</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="CANCELLED"/>
+            <xs:enumeration value="IN_PROGRESS"/>
+            <xs:enumeration value="REJECTED"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="cancelResponseType">
+        <xs:annotation>
+            <xs:documentation>
+                Ответ на запрос отмены заявления
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="orderId" type="xs:long"/>
+            <xs:element
+                name="result" type="CancelResponseResultType"/>
+            <xs:element
+                name="comment" type="string-2048" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:simpleType name="TextResponseResultType">
+        <xs:annotation>
+            <xs:documentation>Результат передачи текстового сообщения
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="OK"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="textResponseType">
+        <xs:annotation>
+            <xs:documentation>
+                Ответ на текстовое сообщение от заявителя в ведомство
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="orderId" type="xs:long"/>
+            <xs:element name="result" type="TextResponseResultType"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="FormDataResponseType">
+        <xs:annotation>
+            <xs:documentation>
+                Ответ на подачу заявления или запроса на отмену
+                заявления или текстового сообщения от заявителя в
+                ведомство
+            </xs:documentation>
+        </xs:annotation>
+        <xs:choice>
+            <xs:element
+                name="changeOrderInfo" type="changeOrderInfoType"/>
+            <xs:element
+                name="cancelResponse" type="cancelResponseType"/>
+            <xs:element name="textResponse" type="textResponseType"/>
+        </xs:choice>
+    </xs:complexType>
+    <!-- Описания вложений -->
+    <xs:element name="AppliedDocuments" type="AppliedDocumentsType">
+        <xs:annotation>
+            <xs:documentation>Группа вложений</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="AppliedDocument" type="AppliedDocumentType">
+        <xs:annotation>
+            <xs:documentation>Вложение</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="CodeDocument" type="xs:string">
+        <xs:annotation>
+            <xs:documentation>Код документа</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="Name" type="xs:string">
+        <xs:annotation>
+            <xs:documentation>Имя файла документа</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="Number" type="xs:string">
+        <xs:annotation>
+            <xs:documentation>Номер документа</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="URL" type="xs:string">
+        <xs:annotation>
+            <xs:documentation>Относительный путь к файлу внутри архива
+            </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="Type" type="xs:string">
+        <xs:annotation>
+            <xs:documentation>MIME-тип контента</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="DigestValue" type="xs:string">
+        <xs:annotation>
+            <xs:documentation>Хэш файла в соответствии с ГОСТ
+            </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="BusinessName" type="xs:string">
+        <xs:annotation>
+            <xs:documentation>Бизнес-наименование документа
+            </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:complexType name="AppliedDocumentsType">
+        <xs:sequence>
+            <xs:element ref="AppliedDocument" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="AppliedDocumentType">
+        <xs:sequence>
+            <xs:element ref="CodeDocument" minOccurs="0"/>
+            <xs:element ref="Name"/>
+            <xs:element ref="Number" minOccurs="0"/>
+            <xs:element ref="URL"/>
+            <xs:element ref="Type"/>
+            <xs:element ref="BusinessName"/>
+        </xs:sequence>
+        <xs:attribute ref="AttachmentId"/>
+    </xs:complexType>
+    <xs:attribute name="AttachmentId">
+        <xs:annotation>
+            <xs:documentation>Уникальный идентификатор вложения
+            </xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+            <xs:restriction base="adp:UUID"/>
+        </xs:simpleType>
+    </xs:attribute>
+    <!-- Адрес с полной детализацией -->
+    <xs:complexType name="AddressType">
+        <xs:sequence>
+            <xs:element name="Address" type="string-1024" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="Region" type="string-50" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Регион</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Area" type="string-100" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Район</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="City" type="string-150" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Город</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="IntracityArea" type="string-150" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Внутригородской район</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Place" type="string-150" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Населенный пункт</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Street" type="string-100" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Улица</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="AdditionalArea" type="string-150" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Доп. территория</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="AdditionalStreet" type="string-150" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Улица на доп. территории</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="House" type="string-10" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Дом</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Building1" type="string-10" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Корпус</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Building2" type="string-10" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Строение</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Apartment" type="string-10" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Квартира</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Postcode" type="PostCodeType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Индекс</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:simpleType name="PostCodeType">
+        <xs:annotation>
+            <xs:documentation>Почтовый индекс</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:length value="6"/>
+            <xs:pattern value="\d{6}"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="string-10">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="10"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="string-100">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="100"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="string-150">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="150"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="string-1024">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="1024"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+</xs:schema>
+
